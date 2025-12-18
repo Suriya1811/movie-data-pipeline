@@ -1,6 +1,5 @@
--- =========================
 -- Movies table
--- =========================
+
 CREATE TABLE IF NOT EXISTS movies (
     movie_id INTEGER PRIMARY KEY,
     title TEXT NOT NULL,
@@ -11,17 +10,17 @@ CREATE TABLE IF NOT EXISTS movies (
     box_office TEXT
 );
 
--- =========================
+
 -- Genres table
--- =========================
+
 CREATE TABLE IF NOT EXISTS genres (
     genre_id INTEGER PRIMARY KEY AUTOINCREMENT,
     genre_name TEXT UNIQUE NOT NULL
 );
 
--- =========================
+
 -- Movie ↔ Genre mapping
--- =========================
+
 CREATE TABLE IF NOT EXISTS movie_genres (
     movie_id INTEGER,
     genre_id INTEGER,
@@ -30,9 +29,9 @@ CREATE TABLE IF NOT EXISTS movie_genres (
     FOREIGN KEY (genre_id) REFERENCES genres(genre_id)
 );
 
--- =========================
+
 -- Ratings table
--- =========================
+
 CREATE TABLE IF NOT EXISTS ratings (
     user_id INTEGER,
     movie_id INTEGER,

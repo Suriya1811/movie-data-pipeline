@@ -216,7 +216,7 @@ Set the OMDb API key as an environment variable (Windows):
 setx OMDB_API_KEY "your_api_key_here"
 ```
 
-⚠️ Important:
+ Important:
 
 - This command needs to be run only once
 - Restart the terminal after setting the key
@@ -255,9 +255,7 @@ Use:
 - Browse Data → to view tables
 - Execute SQL → to run queries from `queries.sql`
 
-⚠️ Note:
+ Note:
 
 You do not need to run SQL to load data
 SQL is used only for analysis and verification
-
-## New README file

@@ -1,178 +1,223 @@
-### Movie Data Pipeline (ETL Project)
+# Movie Data Pipeline (ETL Project)
 
 ## Overview
 
-This project is a simple ETL (Extract, Transform, Load) data pipeline built using Python, SQLite, and the OMDb API.
+This project implements a simple end-to-end ETL (Extract, Transform, Load) pipeline using Python.
+The pipeline ingests movie and rating data from CSV files, enriches movie metadata using the OMDb API, stores the processed data in a relational database, and enables analytical queries using SQL.
 
-The goal of this project is to demonstrate foundational data engineering concepts such as:
-
-- Data ingestion
-- Data transformation
-- API-based enrichment
-- Relational data modeling
-
-# Movie Data Pipeline – Data Engineering Assignment
+The purpose of this project is to demonstrate core data engineering fundamentals, including data ingestion, data transformation, external API integration, and relational data modeling.
 
 ## Objective
 
-The objective of this assignment is to design and build a simple data pipeline that:
+The objective of this assignment is to design and build a small but realistic data pipeline that:
 
 - Ingests movie data from multiple sources
-- Cleans and transforms the data
-- Enriches it using an external API
-- Loads it into a relational database
-- Answers analytical questions using SQL
+- Cleans and transforms raw data
+- Enriches movie metadata using an external API
+- Loads structured data into a relational database
+- Supports analytical queries using SQL
 
-This project simulates a real-world data engineering task commonly performed in analytics and data platform teams.
 
 ## Technologies Used
 
-- Python 3
-- Pandas – data processing and transformation
-- SQLite – relational database
+- Python 3 – core programming language
+- Pandas – data ingestion and transformation
+- SQLite – lightweight relational database
 - OMDb API – external movie metadata enrichment
 - DB Browser for SQLite – database inspection and query execution
 
-## Assignment Tasks and Implementation
+## Task 1: Environment Setup
 
-### Task 1: Environment Setup
+### What the assignment asked
 
-#### What was done
+- Choose a relational database
+- Set up the database and required tables
+- Write ingestion and transformation logic in Python
 
-- Created a Python virtual environment for dependency isolation
-- Installed required Python libraries (pandas, requests)
-- Selected SQLite as the relational database (lightweight and free)
-- Structured the project according to the submission guidelines
+### What I did
 
-#### Outcome
+- Selected SQLite as the relational database because it is lightweight, free, and well-suited for a take-home assignment.
+- Created all required database tables using an SQL script (schema.sql).
+- Implemented the complete ingestion and transformation logic using Python.
+- Used standard libraries:
+  - pandas for data ingestion and transformation
+  - requests for external API calls
+  - sqlite3 for database interaction
 
-- Clean and reproducible development environment
-- Ready for ETL pipeline execution
+### Short Summary
 
-### Task 2: Data Sources
+SQLite was chosen for simplicity and reproducibility, while Python with Pandas and Requests was used to handle all ingestion and transformation logic in a clean and modular way.
 
-#### 1. Local CSV Files
+## Task 2: Data Sources
 
-- Used the MovieLens small dataset
+### What the assignment asked
 
-Processed the following files:
+- Use two data sources:
+  - Local CSV files (MovieLens dataset)
+  - External OMDb API
 
-- `movies.csv` – movie metadata
-- `ratings.csv` – user ratings
+### 2.1 Local CSV Files (MovieLens Dataset)
 
-These files act as the primary raw data source.
+#### What I did
 
-#### 2. External API – OMDb
+- Downloaded the MovieLens small dataset
+- Used only:
+  - movies.csv
+  - ratings.csv
+- Organized both files under a /data folder
+- Loaded the data into Pandas DataFrames during the extract phase
 
-- Integrated the OMDb API to enrich movie data
+#### Short Summary
 
-Retrieved additional attributes:
+The MovieLens dataset serves as the primary source of movie titles, genres, and user ratings.
 
-- IMDb ID
-- Director
-- Plot
-- Box Office collection
+### 2.2 External API – OMDb
 
-### Task 3: Data Modeling
+#### What I did
 
-#### What was done
+- Generated a free OMDb API key
+- Stored the API key securely using an environment variable
+- Enriched movie data with:
+  - IMDb ID
+  - Director
+  - Plot
+  - Box office collection
 
-- Designed a relational database schema
-- Created normalized tables to avoid data duplication
-- Implemented relationships using primary and foreign keys
+#### Short Summary
 
-#### Tables Created
+The OMDb API acts as an external enrichment layer that adds additional movie metadata not available in the raw dataset.
 
-- `movies` – movie-level information
-- `genres` – unique genres
-- `movie_genres` – many-to-many relationship between movies and genres
-- `ratings` – user ratings
+## Task 3: Data Modeling
 
-The schema is defined in `schema.sql`.
+### What the assignment asked
 
-### Task 4: ETL Pipeline Implementation (etl.py)
+- Design a simple database schema
+- Handle relationships between movies, genres, and ratings
+- Create schema.sql
 
-The ETL pipeline is implemented in Python and follows a clear Extract → Transform → Load flow.
+### What I did
 
-#### Extract
+- Designed a normalized relational schema with four tables:
+  - movies – movie-level information and enriched metadata
+  - genres – unique genre values
+  - movie_genres – many-to-many relationship between movies and genres
+  - ratings – user ratings stored as a fact table
+- Primary and foreign keys are used to maintain referential integrity.
 
-- Reads `movies.csv` and `ratings.csv`
-- Loads data into Pandas DataFrames
-- Performs basic validation
+### Short Summary
 
-#### Transform
+The schema is normalized to avoid duplication and structured to support efficient analytical queries.
 
-- Extracts release year from movie titles
-- Cleans movie titles
-- Splits genre data for normalization
-- Enriches movie data using OMDb API
-- Handles missing or unavailable API responses safely
+## Task 4: Building the ETL Pipeline (etl.py)
 
-##### API Rate Limiting
+This is the core of the assignment.
 
-To respect the OMDb free tier limits:
+### 4.1 Extract Phase
 
-```
-MAX_API_CALLS = 50
-```
+#### What the assignment asked
 
-- Only the first 50 movies are enriched
-- All movies are still stored in the database
-- Non-enriched movies contain NULL values for API fields
+- Read CSV files
+- Fetch additional details from OMDb
+- Handle missing or unmatched API results
 
-This demonstrates responsible API usage, as expected in production systems.
+#### What I did
 
-#### Load
+- Read movies.csv and ratings.csv using Pandas
+- Logged record counts to validate ingestion
+- Queried OMDb using cleaned movie titles and release years
+- Returned NULL values when API data was missing instead of failing the pipeline
 
-- Creates tables using `schema.sql`
-- Inserts transformed data into SQLite
-- Stores final output in `movies.db`
+#### Short Summary
 
-The pipeline can be safely re-run.
+The extract phase loads structured CSV data and treats the external API as an optional enrichment source.
 
-### Task 5: Analytical Queries (queries.sql)
+### 4.2 Transform Phase
 
-After loading the data, SQL queries were written to answer the following questions:
+#### What the assignment asked
 
-- Which movie has the highest average rating?
-- What are the top 5 movie genres with the highest average rating?
-- Which director has the most movies in the dataset?
-- What is the average rating of movies released each year?
+- Clean data
+- Enrich data
+- Feature engineering (bonus)
 
-These queries are stored in `queries.sql`.
+#### What I did
 
-## Secure API Key Handling
+- Extracted release year from movie titles using regex
+- Cleaned movie titles for better API matching
+- Split genre strings (| separated) for normalization
+- Enriched movies using OMDb responses
+- Allowed NULL values where enrichment was unavailable
+- Bonus Feature Engineering
+  - Normalized genres into a separate table
+  - Derived release_year from movie titles
 
-The OMDb API key is not hard-coded
+#### Short Summary
 
-It is read using an environment variable:
+Transformation focuses on data cleanliness, structured fields, and safe enrichment without breaking the pipeline.
 
-```
-OMDB_API_KEY = os.getenv("OMDB_API_KEY")
-```
+### 4.3 API Handling and Rate Limiting
 
-### Why this approach is used
+#### What the assignment warned about
 
-- Prevents exposing sensitive credentials
-- Follows industry security best practices
-- Safe for GitHub and project sharing
+- API mismatches
+- Rate limits
+- Missing data
 
-## Viewing Results
+#### What I did
 
-Open `movies.db` using DB Browser for SQLite
+- Limited API calls using:
+  ```
+  MAX_API_CALLS = 50
+  ```
+- Added a delay between API requests
+- Ensured the pipeline continues even if the API fails
 
-- Use Browse Data to inspect tables
-- Use Execute SQL to run queries from `queries.sql`
+#### Short Summary
 
-SQL execution is required only for analysis, not for data loading.
+API usage is rate-limited and failure-tolerant to reflect real-world external dependency handling.
 
-## Key Highlights
+### 4.4 Load Phase
 
-- Clear ETL pipeline design
-- Secure handling of API credentials
-- Controlled external API usage
-- Normalized relational data model
-- Clean, readable, and well-documented code
+#### What the assignment asked
+
+- Load transformed data
+- Ensure idempotency
+
+#### What I did
+
+- Created tables using schema.sql
+- Inserted data using INSERT OR IGNORE
+- Ensured the pipeline can be safely re-run without duplicate records
+
+#### Short Summary
+
+The load phase is idempotent, allowing the pipeline to be re-run safely.
+
+## Task 5: Analytical Queries (queries.sql)
+
+### What the assignment asked
+
+- Answer analytical questions using SQL.
+
+### What I did
+
+- Created SQL queries to answer:
+  - Movie with the highest average rating
+  - Top 5 genres by average rating
+  - Director with the most movies
+  - Average rating of movies released each year
+- All queries are stored in queries.sql.
+
+### Important Note
+
+Director-related results depend on OMDb enrichment. Since API calls are limited, some results may be NULL, which is expected.
+
+### Short Summary
+
+The queries are logically correct and demonstrate how the data model supports analytical use cases.
+
+## Conclusion
+
+I completed all assignment tasks by building a clean, modular ETL pipeline that ingests CSV data, enriches it using a controlled external API, loads it into a normalized relational database, and supports analytical queries using SQL.
 
 
 ## How to Run the Project (Step-by-Step Commands)
@@ -184,7 +229,8 @@ Open Command Prompt / PowerShell and navigate to the project directory:
 ```
 cd C:\Works\movie-data-pipeline
 ```
-the path differs from pc to pc - so check for your specified path.
+
+ Note: The path differs from PC to PC – adjust the path based on your system.
 
 ### Step 2: Create and Activate Virtual Environment
 
@@ -200,7 +246,7 @@ Activate the virtual environment:
 venv\Scripts\activate
 ```
 
-You should see (venv) in the terminal.
+You should see `(venv)` in the terminal.
 
 ### Step 3: Install Required Dependencies
 
@@ -213,7 +259,8 @@ pip install -r requirements.txt
 Set the OMDb API key as an environment variable (Windows):
 
 ```
-setx OMDB_API_KEY "your_api_key_here"
+setx OMDB_API_KEY "your_api_key_here" - I added my API key to the Virtual Enviroinment, so it won't be public.
+
 ```
 
  Important:
@@ -257,5 +304,5 @@ Use:
 
  Note:
 
-You do not need to run SQL to load data
-SQL is used only for analysis and verification
+- You do not need to run SQL to load data
+- SQL is used only for analysis and verification
